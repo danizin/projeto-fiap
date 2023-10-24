@@ -13,7 +13,7 @@ public class SolicitacaoMaquinaService {
 
     public String solicitarMaquina(SolicitacaoFormulario solcitacaoForm) {
         String modeloMaquina = solcitacaoForm.getModeloMaquina();
-        Professor professor = new Professor(1L, "TESTE", new Date());
+        Professor professor = new Professor(1L, "AAAAAAAAAAAAA", new Date());
         return professor.solicitar(new Maquina());
     }
 }
