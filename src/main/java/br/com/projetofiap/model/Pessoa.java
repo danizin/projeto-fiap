@@ -1,17 +1,10 @@
 package br.com.projetofiap.model;
 
-import jakarta.persistence.*;
-
 import java.util.Date;
 
-@Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Pessoa {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pessoaId;
-
     private String nome;
     private Date dataNascimento;
 
