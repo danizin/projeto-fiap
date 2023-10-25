@@ -1,27 +1,15 @@
 package br.com.projetofiap.model;
 
-import jakarta.persistence.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
 public class Maquina {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long maquinaId;
-
     private String modelo;
     private String numeroSerial;
-    @ManyToMany
-    @JoinTable(
-            name = "usuario_maquina",
-            joinColumns = @JoinColumn(name = "maquina_id"),
-            inverseJoinColumns = @JoinColumn(name = "pessoa_id")
-    )
     private List<Pessoa> pessoasSolicitantes = new ArrayList<>();
-    @ManyToOne
+
     private Tecnico tecnicoResponsavel;
 
     public Long getMaquinaId() {
