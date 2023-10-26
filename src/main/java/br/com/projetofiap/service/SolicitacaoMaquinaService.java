@@ -1,31 +1,54 @@
 package br.com.projetofiap.service;
 
 
-import br.com.projetofiap.db.MaquinaDao;
+import br.com.projetofiap.db.SolicitacaoDao;
+import br.com.projetofiap.exception.SolicitacaoInvalidaException;
+import br.com.projetofiap.form.SolicitacaoDeManutencaoForm;
 import br.com.projetofiap.form.SolicitacaoFormulario;
-import br.com.projetofiap.model.Maquina;
-import br.com.projetofiap.model.Professor;
+import br.com.projetofiap.model.Solicitacao;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 @Service
 public class SolicitacaoMaquinaService {
 
     public String solicitarMaquina(SolicitacaoFormulario solcitacaoForm) {
-        Professor professor = new Professor(1L, "AAAAAAAAAAAAA", new Date());
+        //TODO
+        return "";
+    }
 
+    public void solicitarManutencao(SolicitacaoDeManutencaoForm solcitacaoForm) {
+        try {
+            validarCamposObrigatorios(solcitacaoForm);
 
-        Maquina maquina = new Maquina();
-        maquina.setMaquinaId(1L);
-        maquina.setModelo(solcitacaoForm.getModeloMaquina());
-        maquina.setNumeroSerial("123456789");
+            Solicitacao solicitacao = new Solicitacao(
+                    solcitacaoForm.getModeloMaquina(),
+                    solcitacaoForm.getNumeroSerial(),
+                    solcitacaoForm.getDataSolicitacao(),
+                    solcitacaoForm.getCpf(),
+                    solcitacaoForm.getDetalhesDoDefeito()
+            );
 
-        MaquinaDao.salvar(maquina);
+            SolicitacaoDao.salvar(solicitacao);
+        } catch (Exception e) {
+            throw new SolicitacaoInvalidaException("Erro ao solicitar manutenção: " + e.getMessage());
+        }
+    }
 
-        Maquina maquinaRecuperada = MaquinaDao.buscarPorId(1L).orElse(null);
-
-
-        return professor.solicitar(new Maquina()) + " " + maquinaRecuperada.getModelo();
+    private void validarCamposObrigatorios(SolicitacaoDeManutencaoForm solcitacaoForm) {
+        if (solcitacaoForm.getModeloMaquina() == null || solcitacaoForm.getModeloMaquina().trim().isEmpty()) {
+            throw new SolicitacaoInvalidaException("Modelo da máquina é obrigatório.");
+        }
+        if (solcitacaoForm.getNumeroSerial() == null || solcitacaoForm.getNumeroSerial().trim().isEmpty()) {
+            throw new SolicitacaoInvalidaException("Número serial é obrigatório.");
+        }
+        if (solcitacaoForm.getDataSolicitacao() == null) {
+            throw new SolicitacaoInvalidaException("Data de solicitação é obrigatória.");
+        }
+        if (solcitacaoForm.getCpf() == null || solcitacaoForm.getCpf().trim().isEmpty()) {
+            throw new SolicitacaoInvalidaException("CPF é obrigatório.");
+        }
+        if (solcitacaoForm.getDetalhesDoDefeito() == null || solcitacaoForm.getDetalhesDoDefeito().trim().isEmpty()) {
+            throw new SolicitacaoInvalidaException("Detalhes do defeito são obrigatórios.");
+        }
     }
 }
