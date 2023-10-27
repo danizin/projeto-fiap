@@ -1,30 +1,67 @@
 package br.com.projetofiap.service;
 
 import br.com.projetofiap.dto.UsuariosDTO;
+import br.com.projetofiap.exception.NegocioException;
 import br.com.projetofiap.mapper.UsuarioMapper;
+import br.com.projetofiap.model.Usuarios;
+import br.com.projetofiap.repositories.UsuariosRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UsuariosService {
 
     private final UsuarioMapper mapper;
+    private final UsuariosRepository repository;
 
+    @Transactional
     public UsuariosDTO gravar(UsuariosDTO usuariosDTO) {
         var usuario = this.mapper.mapToUsuario(usuariosDTO);
+        usuario.setId(null);
+        Optional<Usuarios> usuariosOptional = this.repository.findByCpf(usuario.getCpf());
 
-//        TODO: Implementar método save
+        if (usuariosOptional.isPresent()) {
+            throw new NegocioException("Usuário já cadastrado");
+        }
 
-        return this.mapper.mapToUsuariosDTO(usuario);
+        return this.mapper.mapToUsuariosDTO(this.repository.save(usuario));
     }
 
+    @Transactional
     public UsuariosDTO atualizar(UsuariosDTO usuariosDTO, Integer id) {
-        var usuario = this.mapper.mapToUsuario(usuariosDTO);
+        Usuarios usuario = obterUsuario(id);
 
-//        TODO: pesquisar usuário com {id}
+        Optional<Usuarios> usuariosOptional = this.repository.verificarUsuarioJahCadastrado(usuario.getCpf(), id);
 
-        return this.mapper.mapToUsuariosDTO(usuario);
+        if (usuariosOptional.isPresent()) {
+            usuario.setNome(usuariosDTO.nome());
+            usuario.setCpf(usuariosDTO.cpf());
+            usuario.setDataNascimento(usuariosDTO.dataNascimento());
+            usuario.setPerfil(usuariosDTO.perfil());
+        } else {
+            throw new RuntimeException("Não é possível alterar o cpf do usuário");
+        }
+
+        return this.mapper.mapToUsuariosDTO(this.repository.save(usuario));
+    }
+
+    @Transactional
+    public void deletar(Integer id) {
+        Usuarios usuario = obterUsuario(id);
+        this.repository.delete(usuario);
+    }
+
+    public UsuariosDTO obterUsuarioPorId(Integer id) {
+        return this.mapper.mapToUsuariosDTO(this.obterUsuario(id));
+    }
+
+    private Usuarios obterUsuario(Integer id) {
+        Optional<Usuarios> usuariosOptional = this.repository.findById(id);
+        return usuariosOptional.orElseThrow(() -> new NegocioException("Usuário não localizado"));
     }
 
 }
