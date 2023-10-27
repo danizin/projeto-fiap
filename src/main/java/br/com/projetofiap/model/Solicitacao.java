@@ -8,18 +8,26 @@ public class Solicitacao {
     private String modeloMaquina;
     private String numeroSerial;
     private LocalDate dataSolicitacao;
-    private String cpf;
+    private String cpfUsuario;
     private String detalhesDoDefeito;
+
+    private StatusManutencao statusManutencao;
 
     public Solicitacao() {
     }
 
-    public Solicitacao(String modeloMaquina, String numeroSerial, LocalDate dataSolicitacao, String cpf, String detalhesDoDefeito) {
+    public Solicitacao(String modeloMaquina,
+                       String numeroSerial,
+                       LocalDate dataSolicitacao,
+                       String cpfUsuario,
+                       String detalhesDoDefeito,
+                       StatusManutencao statusManutencao) {
         this.modeloMaquina = modeloMaquina;
         this.numeroSerial = numeroSerial;
         this.dataSolicitacao = dataSolicitacao;
-        this.cpf = cpf;
+        this.cpfUsuario = cpfUsuario;
         this.detalhesDoDefeito = detalhesDoDefeito;
+        this.statusManutencao = statusManutencao;
     }
 
     public Long getSolicitacaoId() {
@@ -54,12 +62,12 @@ public class Solicitacao {
         this.dataSolicitacao = dataSolicitacao;
     }
 
-    public String getCpf() {
-        return cpf;
+    public String getCpfUsuario() {
+        return cpfUsuario;
     }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
+    public void setCpfUsuario(String cpfUsuario) {
+        this.cpfUsuario = cpfUsuario;
     }
 
     public String getDetalhesDoDefeito() {
@@ -68,5 +76,13 @@ public class Solicitacao {
 
     public void setDetalhesDoDefeito(String detalhesDoDefeito) {
         this.detalhesDoDefeito = detalhesDoDefeito;
+    }
+
+    public StatusManutencao getStatusManutencao() {
+        return statusManutencao;
+    }
+
+    public void setStatusManutencao(StatusManutencao statusManutencao) {
+        this.statusManutencao = statusManutencao;
     }
 }

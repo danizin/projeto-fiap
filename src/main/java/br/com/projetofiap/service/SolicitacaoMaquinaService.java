@@ -6,6 +6,7 @@ import br.com.projetofiap.exception.SolicitacaoInvalidaException;
 import br.com.projetofiap.form.SolicitacaoDeManutencaoForm;
 import br.com.projetofiap.form.SolicitacaoFormulario;
 import br.com.projetofiap.model.Solicitacao;
+import br.com.projetofiap.model.StatusManutencao;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,7 +26,8 @@ public class SolicitacaoMaquinaService {
                     solcitacaoForm.getNumeroSerial(),
                     solcitacaoForm.getDataSolicitacao(),
                     solcitacaoForm.getCpf(),
-                    solcitacaoForm.getDetalhesDoDefeito()
+                    solcitacaoForm.getDetalhesDoDefeito(),
+                    StatusManutencao.ABERTA
             );
 
             SolicitacaoDao.salvar(solicitacao);
