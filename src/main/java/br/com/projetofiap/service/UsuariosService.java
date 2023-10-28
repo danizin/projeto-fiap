@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -60,6 +61,10 @@ public class UsuariosService {
     }
 
     private Usuarios obterUsuario(Integer id) {
+        if (Objects.isNull(id) || id <= 0) {
+            throw new NegocioException("ID inválido");
+        }
+
         Optional<Usuarios> usuariosOptional = this.repository.findById(id);
         return usuariosOptional.orElseThrow(() -> new NegocioException("Usuário não localizado"));
     }
