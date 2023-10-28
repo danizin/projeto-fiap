@@ -1,13 +1,15 @@
 package br.com.projetofiap.controller;
 
 import br.com.projetofiap.dto.UsuariosDTO;
-import br.com.projetofiap.service.UsuariosService;
+import br.com.projetofiap.services.UsuariosService;
+import br.com.projetofiap.util.PathUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -23,9 +25,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @RestController
-@RequestMapping("/usuarios")
+@RequestMapping(PathUtil.API + "/usuarios")
 @RequiredArgsConstructor
-@Tag(name = "1 - Usuário", description = "Serviços disponíveis ao usuário")
+@Tag(name = "1 - Usuários", description = "Serviços disponíveis ao usuário")
 public class UsuariosController {
 
     private final UsuariosService service;
@@ -35,7 +37,7 @@ public class UsuariosController {
             @ApiResponse(responseCode = "201", description = "Sucesso")}
     )
     @Operation(summary = "Serviço responsável por cadastrar um novo usuário")
-    public ResponseEntity<UsuariosDTO> gravar(@RequestBody UsuariosDTO usuarioDTO) {
+    public ResponseEntity<UsuariosDTO> gravar(@Valid @RequestBody UsuariosDTO usuarioDTO) {
         var usuario = this.service.gravar(usuarioDTO);
         var location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
@@ -50,7 +52,7 @@ public class UsuariosController {
             @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                     schema = @Schema(implementation = UsuariosDTO.class))}),
             @ApiResponse(responseCode = "404", description = "Registro não encontrado")})
-    public ResponseEntity<UsuariosDTO> atualizar(@RequestBody UsuariosDTO usuarioDTO, @PathVariable("id") Integer id) {
+    public ResponseEntity<UsuariosDTO> atualizar(@Valid @RequestBody UsuariosDTO usuarioDTO, @PathVariable("id") Integer id) {
         return new ResponseEntity<>(this.service.atualizar(usuarioDTO, id), HttpStatus.OK);
     }
 

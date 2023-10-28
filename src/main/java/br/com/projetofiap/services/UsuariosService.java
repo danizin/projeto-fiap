@@ -1,4 +1,4 @@
-package br.com.projetofiap.service;
+package br.com.projetofiap.services;
 
 import br.com.projetofiap.dto.UsuariosDTO;
 import br.com.projetofiap.exception.NegocioException;
