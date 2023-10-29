@@ -49,7 +49,7 @@ public class MaquinaController {
         }
     )
     @Operation(summary = "Serviço responsável por cadastrar uma nova máquina")
-    public ResponseEntity<MaquinasDTO> gravar(@Valid @RequestBody MaquinasDTO maquinasDTO) {
+    public ResponseEntity<Void> gravar(@Valid @RequestBody MaquinasDTO maquinasDTO) {
         var maquina = this.service.gravar(maquinasDTO);
         var location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")

@@ -9,14 +9,17 @@ import java.util.Arrays;
 @AllArgsConstructor
 public enum SituacaoMaquinaEnum {
 
-    ATIVA(1, "Ativa"),
-    BAIXADA(2, "Baixada");
+    ATIVA(1, "A", "Ativa"),
+    BAIXADA(2, "B", "Baixada");
 
     private final Integer codigo;
+    private final String sigla;
     private final String descricao;
 
-    public static SituacaoMaquinaEnum obterPorCodigo(Integer codigo) {
-        return Arrays.stream(SituacaoMaquinaEnum.values()).filter(obj -> obj.getCodigo().equals(codigo)).findFirst().orElse(null);
+    public static SituacaoMaquinaEnum obterPorSigla(String sigla) {
+        return Arrays.stream(SituacaoMaquinaEnum.values())
+                .filter(obj -> obj.getSigla().equalsIgnoreCase(sigla))
+                .findFirst().orElse(null);
     }
 
 }
