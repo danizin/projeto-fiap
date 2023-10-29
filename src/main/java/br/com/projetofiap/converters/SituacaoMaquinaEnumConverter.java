@@ -7,20 +7,19 @@ import jakarta.persistence.Converter;
 import java.util.Objects;
 
 @Converter(autoApply = true)
-public class SituacaoMaquinaEnumConverter implements AttributeConverter<SituacaoMaquinaEnum, Integer> {
-
+public class SituacaoMaquinaEnumConverter implements AttributeConverter<SituacaoMaquinaEnum, String> {
 
     @Override
-    public Integer convertToDatabaseColumn(SituacaoMaquinaEnum objEnum) {
+    public String convertToDatabaseColumn(SituacaoMaquinaEnum objEnum) {
         if (Objects.isNull(objEnum)) {
             return null;
         }
-        return objEnum.getCodigo();
+        return objEnum.getSigla();
     }
 
     @Override
-    public SituacaoMaquinaEnum convertToEntityAttribute(Integer codigo) {
-        return SituacaoMaquinaEnum.obterPorCodigo(codigo);
+    public SituacaoMaquinaEnum convertToEntityAttribute(String sigla) {
+        return SituacaoMaquinaEnum.obterPorSigla(sigla);
     }
 }
 

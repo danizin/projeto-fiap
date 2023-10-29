@@ -37,7 +37,7 @@ public class UsuariosController {
             @ApiResponse(responseCode = "201", description = "Sucesso")}
     )
     @Operation(summary = "Serviço responsável por cadastrar um novo usuário")
-    public ResponseEntity<UsuariosDTO> gravar(@Valid @RequestBody UsuariosDTO usuarioDTO) {
+    public ResponseEntity<Void> gravar(@Valid @RequestBody UsuariosDTO usuarioDTO) {
         var usuario = this.service.gravar(usuarioDTO);
         var location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}")
