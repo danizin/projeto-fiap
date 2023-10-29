@@ -44,6 +44,7 @@ public class SolicitacoesService {
         solicitacao.setDataSolicitacao(LocalDateTime.now());
         solicitacao.setDescricao(dto.descricao());
         solicitacao.setStatus(AGUARDANDO);
+        solicitacao.setTipoSolicitacao(dto.tipoSolicitacao());
         return this.repository.save(solicitacao).getId();
     }
 
