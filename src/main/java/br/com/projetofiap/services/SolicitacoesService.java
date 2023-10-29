@@ -80,6 +80,10 @@ public class SolicitacoesService {
             throw new NegocioException("Usuário sem as credenciais necessárias");
         }
 
+        if (solicitacao.getStatus().equals(FINALIZADO)) {
+            throw new NegocioException("Solicitação não pode ser cancelada");
+        }
+
         solicitacao.setUsuarioResponsavel(usuarioResponsavel);
         solicitacao.setStatus(CANCELADO);
         solicitacao.setResposta(dto.resposta());
