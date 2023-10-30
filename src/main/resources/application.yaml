@@ -7,3 +7,18 @@ spring:
     console:
       enabled: true
       path: /h2-console
+  mail:
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+    host: smtp.gmail.com
+    port: 587
+
+springdoc:
+  swagger-ui:
+    tagsSorter: alpha

@@ -13,6 +13,8 @@ import br.com.projetofiap.model.Usuarios;
 import br.com.projetofiap.repositories.SolicitacoesRepository;
 import br.com.projetofiap.repositories.UsuariosRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.MailException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,11 +22,14 @@ import java.time.LocalDateTime;
 
 import static br.com.projetofiap.enums.StatusSolicitacaoEnum.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SolicitacoesService {
 
     private final SolicitacoesMapper mapper;
+
+    private final EmailService emailService;
 
     private final SolicitacoesRepository repository;
     private final UsuariosRepository usuariosRepository;
@@ -35,17 +40,25 @@ public class SolicitacoesService {
             throw new NegocioException("Código do usuário inválido");
         }
 
-        Usuarios usuarios = this.usuariosRepository.findById(dto.codUsuarioSolicitante())
+        Usuarios usuario = this.usuariosRepository.findById(dto.codUsuarioSolicitante())
                                                 .orElseThrow(() -> new NegocioException("Usuário informado inválido"));
 
         var solicitacao = new Solicitacoes();
         solicitacao.setId(null);
-        solicitacao.setUsuarioSolicitante(usuarios);
+        solicitacao.setUsuarioSolicitante(usuario);
         solicitacao.setDataSolicitacao(LocalDateTime.now());
         solicitacao.setDescricao(dto.descricao());
         solicitacao.setStatus(AGUARDANDO);
         solicitacao.setTipoSolicitacao(dto.tipoSolicitacao());
-        return this.repository.save(solicitacao).getId();
+        Integer codigoSolicitacao = this.repository.save(solicitacao).getId();
+
+        try {
+            this.emailService.enviarEmail(solicitacao.getUsuarioSolicitante().getEmail(), String.format("Abertura de chamado número %s", codigoSolicitacao.toString()), templateAberturaChamado(usuario.getNome()));
+        } catch (MailException e) {
+            log.error("Falha ao enviar o email de abertura de chamado", e);
+        }
+
+        return codigoSolicitacao;
     }
 
     public SolicitacoesDTO obterSolicitacaoPorId(Integer id) {
@@ -90,7 +103,13 @@ public class SolicitacoesService {
         solicitacao.setResposta(dto.resposta());
         solicitacao.setDataResposta(LocalDateTime.now());
 
-        this.mapper.mapToSolicitacaoDTO(this.repository.save(solicitacao));
+        Solicitacoes solicitacaoCancelada = this.repository.save(solicitacao);
+
+        try {
+            this.emailService.enviarEmail(solicitacao.getUsuarioSolicitante().getEmail(), String.format("Cancelamento do chamado número %s", solicitacaoCancelada.getId().toString()), templateCancelamentoChamado(solicitacao.getUsuarioSolicitante().getNome(), dto.resposta()));
+        } catch (MailException e) {
+            log.error("Falha ao enviar o email de abertura de chamado", e);
+        }
     }
 
     @Transactional
@@ -123,6 +142,33 @@ public class SolicitacoesService {
         solicitacao.setStatus(EM_ANALISE);
 
         this.mapper.mapToSolicitacaoDTO(this.repository.save(solicitacao));
+
+        try {
+            this.emailService.enviarEmail(solicitacao.getUsuarioSolicitante().getEmail(), String.format("O chamado número %s foi atribuído para você", solicitacao.getId().toString()), templateAtribuicaoChamado(solicitacao.getUsuarioSolicitante().getNome(), solicitacao.getId().toString()));
+        } catch (MailException e) {
+            log.error("Falha ao enviar o email de atribuição de chamado ", e);
+        }
+    }
+
+    private String templateAberturaChamado(String nome) {
+        return String.format("""
+                                    Caro %s, informamos que foi aberto um chamado e enviado a equipe técnica. \n
+                                    Qualquer dúvida entrar em contato com a equipe de suporte.
+                                    """, nome);
+    }
+
+    private String templateCancelamentoChamado(String nome, String resposta) {
+        return String.format("""
+                                    Caro %s, informamos que foi cancelado o seu chamado. \n
+                                    Segue a resposta da área técnica. \n
+                                    %s
+                                    """, nome, resposta);
+    }
+
+    private String templateAtribuicaoChamado(String nome, String numeroChamado) {
+        return String.format("""
+                                    Caro %s, foi atribuído o chamado %s para você. \n
+                                    """, nome, numeroChamado);
     }
 
 }
