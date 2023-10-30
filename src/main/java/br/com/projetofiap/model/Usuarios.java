@@ -35,6 +35,9 @@ public class Usuarios {
     @Column(name = "TX_CPF")
     private String cpf;
 
+    @Column(name = "TX_EMAIL", length = 50)
+    private String email;
+
     @Column(name = "DT_NASCIMENTO")
     private LocalDate dataNascimento;
 
